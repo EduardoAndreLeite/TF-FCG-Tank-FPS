@@ -327,6 +327,10 @@ int main(int argc, char* argv[])
     ComputeNormals(&planemodel);
     BuildTrianglesAndAddToVirtualScene(&planemodel);
 
+    ObjModel projectilemodel("../../data/projectile.obj");
+    ComputeNormals(&projectilemodel);
+    BuildTrianglesAndAddToVirtualScene(&projectilemodel);
+
     if ( argc > 1 )
     {
         ObjModel model(argv[1]);
@@ -388,6 +392,7 @@ int main(int argc, char* argv[])
         g_lastFrame = currentFrame;
 
         speed = 2.5f * g_deltaTime; //velocidade do player
+        projectile_speed = speed * 3;
 
 
         // Fonte: Laboratório 2
@@ -472,6 +477,7 @@ int main(int argc, char* argv[])
         #define SPHERE 0
         #define BUNNY  1
         #define PLANE  2
+        #define PROJECTILE 3
 
         // Desenhamos o modelo da esfera
         model = Matrix_Translate(-1.0f,0.0f,0.0f)
@@ -494,6 +500,35 @@ int main(int argc, char* argv[])
         glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
         glUniform1i(object_id_uniform, PLANE);
         DrawVirtualObject("plane");
+
+        //Desenha Projetil
+        //float raio = g_VirtualScene["bullet"].bbox_max.x - g_VirtualScene["bullet"].bbox_min.x;
+
+        if(projectile_fired == true){
+            model = Matrix_Identity();
+            model = model * Matrix_Translate(projectile_pos.x , projectile_pos.y, projectile_pos.z)
+                        * Matrix_Rotate_Y(g_CameraTheta)
+                            * Matrix_Rotate_X(g_CameraPhi);
+            PushMatrix(model);
+                model = model* Matrix_Translate(0.0f,0.0f,1.0f)
+                        * Matrix_Scale(0.05f,0.05f,0.05f)
+                        * Matrix_Rotate_X(3.14f/2.0f)
+                        * Matrix_Translate(0,0,0);
+                glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+                glUniform1i(object_id_uniform, PROJECTILE);
+                DrawVirtualObject("projectile");
+            PopMatrix(model);
+
+            glm::vec4 new_pos = glm::vec4(projectile_pos.x + camera_view_vector.x * projectile_speed,
+                                    projectile_pos.y + camera_view_vector.y * projectile_speed,
+                                    projectile_pos.z + camera_view_vector.z * projectile_speed, 1.0f);
+
+            projectile_pos = new_pos;
+
+            /*if(collisionProjectileBullet(projectile_pos, bullet_pos, raio)) {
+                projectile_fired = false;
+            }*/
+        }
 
 
     // COLISÕES
@@ -1114,6 +1149,15 @@ void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
         // com o botão esquerdo pressionado.
         glfwGetCursorPos(window, &g_LastCursorPosX, &g_LastCursorPosY);
         g_LeftMouseButtonPressed = true;
+
+        if (projectile_fired == false){
+            projectile_fired = true;
+            projectile_pos = camera_position_c;
+        }
+        //reseta projetil
+        projectile_fired == false;
+        projectile_pos = camera_position_c;
+
     }
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE)
     {
