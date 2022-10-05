@@ -56,8 +56,8 @@
 const float CAMERA_SPEED = 0.002;
 //Valores usados para o scaling da arena
 float arena_X = 8.0f;
-float arena_Y = 1.0f;
-float arena_Z = 6.0f;
+float arena_Y = 1.5f;
+float arena_Z = 8.0f;
 
 float speed;
 float projectile_speed;
@@ -311,8 +311,9 @@ int main(int argc, char* argv[])
     LoadShadersFromFiles();
 
     // Carregamos duas imagens para serem utilizadas como textura
-    LoadTextureImage("../../data/tc-earth_daymap_surface.jpg");      // TextureImage0
-    LoadTextureImage("../../data/tc-earth_nightmap_citylights.gif"); // TextureImage1
+    LoadTextureImage("../../data/metal.jpg"); // TextureImage0
+    LoadTextureImage("../../data/tc-earth_daymap_surface.jpg");      // TextureImage1
+    LoadTextureImage("../../data/laser.png"); // TextureImage0
 
     // Construímos a representação de objetos geométricos através de malhas de triângulos
     ObjModel spheremodel("../../data/sphere.obj");
@@ -480,7 +481,7 @@ int main(int argc, char* argv[])
         #define PROJECTILE 3
 
         // Desenhamos o modelo da esfera
-        model = Matrix_Translate(-1.0f,0.0f,0.0f)
+        model = Matrix_Translate(-1.0f,1.0f,0.0f)
               * Matrix_Rotate_Z(0.6f)
               * Matrix_Rotate_X(0.2f)
               * Matrix_Rotate_Y(g_AngleY + (float)glfwGetTime() * 0.1f);
@@ -489,14 +490,14 @@ int main(int argc, char* argv[])
         DrawVirtualObject("sphere");
 
         // Desenhamos o modelo do coelho
-        model = Matrix_Translate(1.0f,0.0f,0.0f)
-              * Matrix_Rotate_X(g_AngleX + (float)glfwGetTime() * 0.1f);
+        model = Matrix_Translate(0.8f,0.8f,0.0f);
+              //* Matrix_Rotate_X(g_AngleX + (float)glfwGetTime() * 0.1f);
         glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
         glUniform1i(object_id_uniform, BUNNY);
         DrawVirtualObject("bunny");
 
         // Desenhamos o plano do chão
-        model = Matrix_Translate(0.0f,-1.1f,0.0f);
+        model = Matrix_Translate(0.0f,-0.5f,0.0f)*Matrix_Scale(arena_X,arena_Y,arena_Z);
         glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
         glUniform1i(object_id_uniform, PLANE);
         DrawVirtualObject("plane");

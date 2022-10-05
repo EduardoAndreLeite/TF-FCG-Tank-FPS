@@ -36,6 +36,9 @@ uniform sampler2D TextureImage2;
 // O valor de saída ("out") de um Fragment Shader é a cor final do fragmento.
 out vec3 color;
 
+vec3 Kd0;
+vec3 Kd = vec3(0.08,0.08,0.08); // Refletância difusa
+
 // Constantes
 #define M_PI   3.14159265358979323846
 #define M_PI_2 1.57079632679489661923
@@ -67,7 +70,7 @@ void main()
     // Coordenadas de textura U e V
     float U = 0.0;
     float V = 0.0;
-    
+
     vec4 P;
     vec4 C;
     if ( object_id == SPHERE )
@@ -87,9 +90,9 @@ void main()
 
         vec4 bbox_center = (bbox_min + bbox_max) / 2.0;
         float rho = 1.0;
-        P = position_model; 
-        C = bbox_center; 
-        
+        P = position_model;
+        C = bbox_center;
+
         vec4 pLine = C + (rho * ((P-C)/length(P-C)));
         vec4 pVect = pLine - C;
 
@@ -98,6 +101,17 @@ void main()
 
         V = (phi + M_PI_2) / M_PI;
         U = (theta + M_PI) / (2 * M_PI);
+
+        vec3 Kd0 = texture(TextureImage1, vec2(U,V)).rgb;
+
+        // Equação de Iluminação
+        float lambert = max(0,dot(n,l));
+
+        color = Kd0 * (lambert + 0.01);
+
+        // Cor final com correção gamma, considerando monitor sRGB.
+        // Veja https://en.wikipedia.org/w/index.php?title=Gamma_correction&oldid=751281772#Windows.2C_Mac.2C_sRGB_and_TV.2Fvideo_standard_gammas
+        color = pow(color, vec3(1.0,1.0,1.0)/2.2);
     }
     else if ( object_id == BUNNY )
     {
@@ -119,28 +133,53 @@ void main()
         float minz = bbox_min.z;
         float maxz = bbox_max.z;
 
-        P = position_model; 
+        P = position_model;
 
         U = (P.x-minx)/(maxx-minx);
         V = (P.y-miny)/(maxy-miny);
+
+        vec3 Kd0 = texture(TextureImage0, vec2(U,V)).rgb;
+
+        // Equação de Iluminação
+        float lambert = max(0,dot(n,l));
+
+        color = Kd0 * (lambert + 0.01);
+
+        // Cor final com correção gamma, considerando monitor sRGB.
+        // Veja https://en.wikipedia.org/w/index.php?title=Gamma_correction&oldid=751281772#Windows.2C_Mac.2C_sRGB_and_TV.2Fvideo_standard_gammas
+        color = pow(color, vec3(1.0,1.0,1.0)/2.2);
     }
     else if ( object_id == PLANE )
     {
         // Coordenadas de textura do plano, obtidas do arquivo OBJ.
         U = texcoords.x;
         V = texcoords.y;
+
+        vec3 Kd0 = texture(TextureImage0, vec2(U,V)).rgb;
+        // Equação de Iluminação
+        float lambert = max(0,dot(n,l));
+
+        color = Kd0 * (lambert + 0.01);
+
+        // Cor final com correção gamma, considerando monitor sRGB.
+        // Veja https://en.wikipedia.org/w/index.php?title=Gamma_correction&oldid=751281772#Windows.2C_Mac.2C_sRGB_and_TV.2Fvideo_standard_gammas
+        color = pow(color, vec3(1.0,1.0,1.0)/2.2);
     }
 
     // Obtemos a refletância difusa a partir da leitura da imagem TextureImage0
-    vec3 Kd0 = texture(TextureImage0, vec2(U,V)).rgb;
+    //vec3 Kd0 = texture(TextureImage0, vec2(U,V)).rgb;
+    else{
 
-    // Equação de Iluminação
-    float lambert = max(0,dot(n,l));
+        vec3 Kd0 = texture(TextureImage2, vec2(U,V)).rgb;
 
-    color = Kd0 * (lambert + 0.01);
+        // Equação de Iluminação
+        float lambert = max(0,dot(n,l));
 
-    // Cor final com correção gamma, considerando monitor sRGB.
-    // Veja https://en.wikipedia.org/w/index.php?title=Gamma_correction&oldid=751281772#Windows.2C_Mac.2C_sRGB_and_TV.2Fvideo_standard_gammas
-    color = pow(color, vec3(1.0,1.0,1.0)/2.2);
-} 
+        color = Kd0 * (lambert + 0.01);
+
+        // Cor final com correção gamma, considerando monitor sRGB.
+        // Veja https://en.wikipedia.org/w/index.php?title=Gamma_correction&oldid=751281772#Windows.2C_Mac.2C_sRGB_and_TV.2Fvideo_standard_gammas
+        color = pow(color, vec3(1.0,1.0,1.0)/2.2);
+    }
+}
 

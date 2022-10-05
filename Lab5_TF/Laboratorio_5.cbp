@@ -98,6 +98,7 @@
 			<Add option="lib\libglfw3.a -lgdi32 -lopengl32" />
 			<Add directory="lib" />
 		</Linker>
+		<Unit filename="data/plane.obj" />
 		<Unit filename="data/projectile.obj" />
 		<Unit filename="include/GLFW/glfw3.h" />
 		<Unit filename="include/GLFW/glfw3native.h" />
