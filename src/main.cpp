@@ -573,25 +573,21 @@ int main(int argc, char* argv[])
 
             if(collisionPlano(EixoPlano::X, arena_X, camera_position_c))
             {
-                //camera_position_c.x = arena_X - 0.42;
                 camera_position_c = old_pos;
             }
 
             if(collisionPlano(EixoPlano::X, -arena_X, camera_position_c))
             {
-                //camera_position_c.x = -arena_X + 0.42;
                 camera_position_c = old_pos;
             }
 
             if(collisionPlano(EixoPlano::Z, arena_Z, camera_position_c))
             {
-                //camera_position_c.z = arena_Z - 0.42;
                 camera_position_c = old_pos;
             }
 
             if(collisionPlano(EixoPlano::Z, -arena_Z, camera_position_c))
             {
-                //camera_position_c.z = -arena_Z + 0.42;
                 camera_position_c = old_pos;
             }
 
@@ -601,10 +597,6 @@ int main(int argc, char* argv[])
         // as matrizes e pontos resultantes dessas transformações.
         //glm::vec4 p_model(0.5f, 0.5f, 0.5f, 1.0f);
         //TextRendering_ShowModelViewProjection(window, projection, view, model, p_model);
-
-        // Imprimimos na tela os ângulos de Euler que controlam a rotação do
-        // terceiro cubo.
-        TextRendering_ShowEulerAngles(window);
 
         // Imprimimos na informação sobre a matriz de projeção sendo utilizada.
         TextRendering_ShowProjection(window);
@@ -1376,6 +1368,19 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mod)
     {
         D_key = false;
     }
+
+
+    // Se o usuário apertar a tecla P, utilizamos projeção perspectiva.
+    if (key == GLFW_KEY_P && action == GLFW_PRESS)
+    {
+        g_UsePerspectiveProjection = true;
+    }
+
+    // Se o usuário apertar a tecla O, utilizamos projeção ortográfica.
+    if (key == GLFW_KEY_O && action == GLFW_PRESS)
+    {
+        g_UsePerspectiveProjection = false;
+    }
 }
 
 // Definimos o callback para impressão de erros da GLFW no terminal
@@ -1444,21 +1449,6 @@ void TextRendering_ShowModelViewProjection(
 
     TextRendering_PrintString(window, " Viewport matrix           NDC      In Pixel Coords.", -1.0f, 1.0f-25*pad, 1.0f);
     TextRendering_PrintMatrixVectorProductMoreDigits(window, viewport_mapping, p_ndc, -1.0f, 1.0f-26*pad, 1.0f);
-}
-
-// Escrevemos na tela os ângulos de Euler definidos nas variáveis globais
-// g_AngleX, g_AngleY, e g_AngleZ.
-void TextRendering_ShowEulerAngles(GLFWwindow* window)
-{
-    if ( !g_ShowInfoText )
-        return;
-
-    float pad = TextRendering_LineHeight(window);
-
-    char buffer[80];
-    snprintf(buffer, 80, "Euler Angles rotation matrix = Z(%.2f)*Y(%.2f)*X(%.2f)\n", g_AngleZ, g_AngleY, g_AngleX);
-
-    TextRendering_PrintString(window, buffer, -1.0f+pad/10, -1.0f+2*pad/10, 1.0f);
 }
 
 // Escrevemos na tela qual matriz de projeção está sendo utilizada.

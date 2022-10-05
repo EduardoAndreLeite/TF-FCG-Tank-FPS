@@ -2,7 +2,7 @@
 #include "collisions.hpp"
 
 
-// Colisao com as paredes - atras e a esquerda do dragao ta bugado - aparece no outro canto
+// Colisao com as paredes
 bool collisionPlano(EixoPlano eixo, float planePos, glm::vec4 pos) {
     switch(eixo) {
         case EixoPlano::X:
@@ -41,36 +41,6 @@ bool CollisionTankPredio(glm::vec4 Playerpos, glm::vec3 player_size, glm::vec4 b
     return collision_x && collision_y && collision_z;
 
 }
-
-
-// Colisao Projetil-Fireball
-/*
-bool collisionProjectileFireball(glm::vec4 Projectilepos, glm::vec4 Fireballpos, float raio){
-    if (Projectilepos.x >= Fireballpos.x + raio || Projectilepos.x <= Fireballpos.x - raio){
-        return true;
-    }
-    if (Projectilepos.y >= Fireballpos.y + raio || Projectilepos.y <= Fireballpos.y - raio){
-        return true;
-    }
-    if (Projectilepos.z >= Fireballpos.z + raio || Projectilepos.z <= Fireballpos.z - raio){
-        return true;
-    }
-
-    return false;
-
-}
-
-
-// Colisao Projetil-Dragao
-// Fonte: https://developer.mozilla.org/en-US/docs/Games/Techniques/3D_collision_detection#point_vs._aabb
-bool collisionProjectileDragon(glm::vec4 bbox_min_dragon, glm::vec4 bbox_max_dragon, glm::vec4 Projectilepos){
-    bool collision_x = (Projectilepos.x >= bbox_min_dragon.x && bbox_max_dragon.x >= Projectilepos.x);
-    bool collision_y = (Projectilepos.y >= bbox_min_dragon.y && bbox_max_dragon.y >= Projectilepos.y);
-    bool collision_z = (Projectilepos.z >= bbox_min_dragon.z && bbox_max_dragon.z >= Projectilepos.z);
-
-    return collision_x && collision_y && collision_z;
-}
-*/
 
 
 
