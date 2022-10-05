@@ -5,7 +5,7 @@
 //    INF01047 Fundamentos de Computação Gráfica
 //               Prof. Eduardo Gastal
 //
-//                   LABORATÓRIO 5
+//                   TRABALHO FINAL
 //
 
 // Arquivos "headers" padrões de C podem ser incluídos em um
@@ -266,7 +266,7 @@ int main(int argc, char* argv[])
     // Criamos uma janela do sistema operacional, com 800 colunas e 600 linhas
     // de pixels, e com título "INF01047 ...".
     GLFWwindow* window;
-    window = glfwCreateWindow(800, 600, "INF01047 - 00287684 - Eduardo André Leite", NULL, NULL);
+    window = glfwCreateWindow(800, 600, "INF01047 - Trabalho Final", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
@@ -344,6 +344,9 @@ int main(int argc, char* argv[])
     ComputeNormals(&building1model);
     BuildTrianglesAndAddToVirtualScene(&building1model);
 
+    ObjModel building2model("../../data/predio2.obj");
+    ComputeNormals(&building2model);
+    BuildTrianglesAndAddToVirtualScene(&building2model);
 
 
     if ( argc > 1 )
@@ -493,12 +496,12 @@ int main(int argc, char* argv[])
         #define BUNNY  1
         #define PLANE  2
         #define PROJECTILE 3
-        //#define TANK 4
         #define BUILDING1 4
-        #define CANO 5
+        #define BUILDING2 5
+        #define CANO 6
 
         // Desenhamos o modelo da esfera
-        model = Matrix_Translate(-1.0f,2.5f,1.0f)
+        model = Matrix_Translate(-1.0f,3.0f,1.0f)
               * Matrix_Rotate_Z(0.6f)
               * Matrix_Rotate_X(0.2f)
               * Matrix_Rotate_Y(g_AngleY + (float)glfwGetTime() * 0.1f);
@@ -559,6 +562,11 @@ int main(int argc, char* argv[])
         glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
         glUniform1i(object_id_uniform, BUILDING1);
         DrawVirtualObject("building1model");
+
+        model = Matrix_Translate(-10.0f,0.0f,-10.0f) * Matrix_Scale(0.1, 0.1, 0.01);
+        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+        glUniform1i(object_id_uniform, BUILDING2);
+        DrawVirtualObject("building2model");
 
         model = Matrix_Translate(-0.8f,0.1f,0.1f)* Matrix_Scale(0.1, 0.1, 0.01);
         glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
