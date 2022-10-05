@@ -1341,6 +1341,18 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mod)
     {
         D_key = false;
     }
+
+    // Se o usuário apertar a tecla P, utilizamos projeção perspectiva.
+    if (key == GLFW_KEY_P && action == GLFW_PRESS)
+    {
+        g_UsePerspectiveProjection = true;
+    }
+
+    // Se o usuário apertar a tecla O, utilizamos projeção ortográfica.
+    if (key == GLFW_KEY_O && action == GLFW_PRESS)
+    {
+        g_UsePerspectiveProjection = false;
+    }
 }
 
 // Definimos o callback para impressão de erros da GLFW no terminal
