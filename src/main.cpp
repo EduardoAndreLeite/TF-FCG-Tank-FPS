@@ -348,6 +348,10 @@ int main(int argc, char* argv[])
     ComputeNormals(&building1model);
     BuildTrianglesAndAddToVirtualScene(&building1model);
 
+    ObjModel building2model("../../data/predio2.obj");
+    ComputeNormals(&building2model);
+    BuildTrianglesAndAddToVirtualScene(&building2model);
+
 
 
     if ( argc > 1 )
@@ -497,9 +501,9 @@ int main(int argc, char* argv[])
 #define BUNNY  1
 #define PLANE  2
 #define PROJECTILE 3
-        //#define TANK 4
 #define BUILDING1 4
-#define CANO 5
+#define BUILDING2 5
+#define CANO 6
 
         // Desenhamos o modelo da esfera
         model = Matrix_Translate(2.0f,2.5f,1.0f)
@@ -564,6 +568,17 @@ int main(int argc, char* argv[])
         glUniform1i(object_id_uniform, BUILDING1);
         DrawVirtualObject("building1model");
 
+        //Desenha o Predio
+        model = Matrix_Translate(6.0f,0.0f,0.0f) * Matrix_Scale(0.1, 0.7, 0.01);
+
+        //bbox do predio para colisao
+        glm::vec4 bbox_max_world_building2 = model * glm::vec4 (g_VirtualScene["building2model"].bbox_max.x, g_VirtualScene["building2model"].bbox_max.y, g_VirtualScene["building2model"].bbox_max.z, 1.0f);
+        glm::vec4 bbox_min_world_building2 = model * glm::vec4 (g_VirtualScene["building2model"].bbox_min.x, g_VirtualScene["building2model"].bbox_min.y, g_VirtualScene["building2model"].bbox_min.z, 1.0f);
+
+        glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+        glUniform1i(object_id_uniform, BUILDING2);
+        DrawVirtualObject("building2model");
+
         model = Matrix_Translate(-0.8f,0.1f,0.1f)* Matrix_Scale(0.1, 0.1, 0.01);
         glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
         glUniform1i(object_id_uniform, CANO);
@@ -607,13 +622,20 @@ int main(int argc, char* argv[])
             camera_position_c = old_pos;
         }
 
-        // Projetil-Coelho  = colisão do projetil com o coelho
-            if(CollisionProjetilCoelho(bbox_min_world_bunny, bbox_max_world_bunny, projectile_pos)) {
-                projectile_fired = false;
-                bunny_lives = bunny_lives - 1;
-                projectile_pos = initial_pos;
+        // Tank-Predio  = colisão do tank com o predio
+        if(CollisionTankPredio2(camera_position_c, glm::vec3(0.2f, 0.2f, 0.2f), bbox_min_world_building2, bbox_max_world_building2))
+        {
+            camera_position_c = old_pos;
+        }
 
-            }
+        // Projetil-Coelho  = colisão do projetil com o coelho
+        if(CollisionProjetilCoelho(bbox_min_world_bunny, bbox_max_world_bunny, projectile_pos))
+        {
+            projectile_fired = false;
+            bunny_lives = bunny_lives - 1;
+            projectile_pos = initial_pos;
+
+        }
 
 
         // Pegamos um vértice com coordenadas de modelo (0.5, 0.5, 0.5, 1) e o

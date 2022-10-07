@@ -203,7 +203,7 @@ void main()
         color = pow(color, vec3(1.0,1.0,1.0)/2.2);
     }
 
-    else if ( object_id == BUILDING1 )
+    else if ( object_id == BUILDING1)
     {
 
 
@@ -232,17 +232,29 @@ void main()
         color = pow(color, vec3(1.0,1.0,1.0)/2.2);
     }
 
-    else if ( object_id == BUILDING2 )
+    else if ( object_id == BUILDING2)
     {
-        // Coordenadas de textura do plano, obtidas do arquivo OBJ.
-        U = texcoords.x;
-        V = texcoords.y;
 
-        vec3 Kd0 = texture(TextureImage0, vec2(U,V)).rgb;
+
+        float minx = bbox_min.x;
+        float maxx = bbox_max.x;
+
+        float miny = bbox_min.y;
+        float maxy = bbox_max.y;
+
+        float minz = bbox_min.z;
+        float maxz = bbox_max.z;
+
+        P = position_model;
+
+        U = (P.x-minx)/(maxx-minx);
+        V = (P.y-miny)/(maxy-miny);
+
+        vec3 Kd = texture(TextureImage2, vec2(U,V)).rgb;
         // Equação de Iluminação
-        float lambert = max(0,dot(n,l));
+        float lambert = max(1,dot(n,l));
 
-        color = Kd0 * (lambert + 0.01);
+        color = Kd * (lambert + 0.01);
 
         // Cor final com correção gamma, considerando monitor sRGB.
         // Veja https://en.wikipedia.org/w/index.php?title=Gamma_correction&oldid=751281772#Windows.2C_Mac.2C_sRGB_and_TV.2Fvideo_standard_gammas

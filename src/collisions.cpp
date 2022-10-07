@@ -56,6 +56,19 @@ bool CollisionTankPredio(glm::vec4 Playerpos, glm::vec3 player_size, glm::vec4 b
 }
 
 // Fonte: https://developer.mozilla.org/en-US/docs/Games/Techniques/3D_collision_detection#point_vs._aabb
+bool CollisionTankPredio2(glm::vec4 Playerpos, glm::vec3 player_size, glm::vec4 bbox_min_building2, glm::vec4 bbox_max_building2){
+
+    glm::vec3 player_half_size = glm::vec3(player_size.x / 2, player_size.y / 2, player_size.z / 2);
+
+    bool collision_x = (Playerpos.x + player_half_size.x >= bbox_min_building2.x && bbox_max_building2.x >= Playerpos.x);
+    bool collision_y = (Playerpos.y + player_half_size.y >= bbox_min_building2.y && bbox_max_building2.y >= Playerpos.y);
+    bool collision_z = (Playerpos.z + player_half_size.z >= bbox_min_building2.z && bbox_max_building2.z >= Playerpos.z);
+
+    return collision_x && collision_y && collision_z;
+
+}
+
+// Fonte: https://developer.mozilla.org/en-US/docs/Games/Techniques/3D_collision_detection#point_vs._aabb
 // Colisao Projetil-Dragao
 bool CollisionProjetilCoelho(glm::vec4 bbox_min_bunny, glm::vec4 bbox_max_bunny, glm::vec4 Projectilepos){
     bool collision_x = (Projectilepos.x >= bbox_min_bunny.x && bbox_max_bunny.x >= Projectilepos.x);
