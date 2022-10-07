@@ -1,4 +1,4 @@
-// Headers da biblioteca GLM: cria��o de matrizes e vetores.
+// Headers da biblioteca GLM: criacao de matrizes e vetores.
 #include "collisions.hpp"
 
 

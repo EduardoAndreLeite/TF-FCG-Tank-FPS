@@ -64,6 +64,7 @@ float projectile_speed;
 float g_deltaTime = 0.0f;
 float g_lastFrame = 0.0f;
 
+
 glm::vec4 projectile_pos;
 
 bool W_key = false;
@@ -501,7 +502,7 @@ int main(int argc, char* argv[])
 #define CANO 5
 
         // Desenhamos o modelo da esfera
-        model = Matrix_Translate(-1.0f,2.5f,1.0f)
+        model = Matrix_Translate(2.0f,2.5f,1.0f)
                 * Matrix_Rotate_Z(0.6f)
                 * Matrix_Rotate_X(0.2f)
                 * Matrix_Rotate_Y(g_AngleY + (float)glfwGetTime() * 0.1f);
@@ -510,7 +511,7 @@ int main(int argc, char* argv[])
         DrawVirtualObject("sphere");
 
         // Desenhamos o modelo do coelho
-        model = Matrix_Translate(-3.0f,-0.5f,0.0f);
+        model = Matrix_Translate(0.0f,0.5f,0.0f);
 
         //Bounding box do coelho para colisoes
         glm::vec4 bbox_max_world_bunny = model * glm::vec4 (g_VirtualScene["bunny"].bbox_max.x, g_VirtualScene["bunny"].bbox_max.y, g_VirtualScene["bunny"].bbox_max.z, 1.0f);
@@ -553,7 +554,7 @@ int main(int argc, char* argv[])
         }
 
         //Desenha o Predio
-        model = Matrix_Translate(0.0f,0.0f,0.0f) * Matrix_Scale(0.1, 0.1, 0.01);
+        model = Matrix_Translate(-4.0f,0.0f,0.0f) * Matrix_Scale(0.1, 0.7, 0.01);
 
         //bbox do predio para colisao
         glm::vec4 bbox_max_world_building = model * glm::vec4 (g_VirtualScene["building1model"].bbox_max.x, g_VirtualScene["building1model"].bbox_max.y, g_VirtualScene["building1model"].bbox_max.z, 1.0f);
@@ -1485,11 +1486,11 @@ void TextRendering_ShowModelViewProjection(
     TextRendering_PrintMatrixVectorProductMoreDigits(window, viewport_mapping, p_ndc, -1.0f, 1.0f-26*pad, 1.0f);
 }
 
-//Printar a vida do player e do dragão
+//Printar a vida do coelho
 void TextRendering_ShowBunnyLives(GLFWwindow* window, int hp)
 {
     std::stringstream text{""};
-    text << "Vidas do Coelho: " << bunny_lives << "/5";
+    text << "Vidas do Coelho: " << bunny_lives << "/4";
     std::string txt = text.str();
     static char  buffer[20];
     strcpy(buffer, txt.c_str());
@@ -1497,7 +1498,7 @@ void TextRendering_ShowBunnyLives(GLFWwindow* window, int hp)
     float lineheight = TextRendering_LineHeight(window);
     float charwidth = TextRendering_CharWidth(window);
 
-    TextRendering_PrintString(window, buffer,  -1.0f, 1.0f-lineheight, 1.0f);
+    TextRendering_PrintString(window, buffer,  -1.0f, -0.9f-lineheight, 2.0f);
 }
 
 // Escrevemos na tela qual matriz de projeção está sendo utilizada.
