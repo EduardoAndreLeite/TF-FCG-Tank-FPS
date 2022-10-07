@@ -72,6 +72,7 @@ bool S_key = false;
 bool D_key = false;
 
 bool projectile_fired = false;
+int bunny_lives = 5;
 
 glm::vec4 bezier(float pos, glm::vec4 pc1, glm::vec4 pc2, glm::vec4 pc3, glm::vec4 pc4);
 
@@ -147,6 +148,8 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mode
 void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
 void CursorPosCallback(GLFWwindow* window, double xpos, double ypos);
 void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset);
+
+void TextRendering_ShowBunnyLives(GLFWwindow* window, int hp);
 
 // Definimos uma estrutura que armazenará dados necessários para renderizar
 // cada objeto da cena virtual.
@@ -597,11 +600,20 @@ int main(int argc, char* argv[])
             camera_position_c = old_pos;
         }
 
-        // Tank-Predio  = colisão com do tank com o predi
+        // Tank-Predio  = colisão do tank com o predio
         if(CollisionTankPredio(camera_position_c, glm::vec3(0.2f, 0.2f, 0.2f), bbox_min_world_building, bbox_max_world_building))
         {
             camera_position_c = old_pos;
         }
+
+        // Projetil-Coelho  = colisão do projetil com o coelho
+            if(CollisionProjetilCoelho(bbox_min_world_bunny, bbox_max_world_bunny, projectile_pos)) {
+                projectile_fired = false;
+                bunny_lives = bunny_lives - 1;
+                projectile_pos = initial_pos;
+
+            }
+
 
         // Pegamos um vértice com coordenadas de modelo (0.5, 0.5, 0.5, 1) e o
         // passamos por todos os sistemas de coordenadas armazenados nas
@@ -1253,6 +1265,12 @@ void CursorPosCallback(GLFWwindow* window, double xpos, double ypos)
     // parâmetros que definem a posição da câmera dentro da cena virtual.
     // Assim, temos que o usuário consegue controlar a câmera.
 
+    //Se as vidas do coelho chegarem em zero, voce ganhou e o jogo acaba
+    if(bunny_lives <= 0)
+        {
+            glfwSetWindowShouldClose(window, GL_TRUE);
+        }
+
     if (!g_LeftMouseButtonPressed)
     {
         // Deslocamento do cursor do mouse em x e y de coordenadas de tela!
@@ -1467,6 +1485,21 @@ void TextRendering_ShowModelViewProjection(
     TextRendering_PrintMatrixVectorProductMoreDigits(window, viewport_mapping, p_ndc, -1.0f, 1.0f-26*pad, 1.0f);
 }
 
+//Printar a vida do player e do dragão
+void TextRendering_ShowBunnyLives(GLFWwindow* window, int hp)
+{
+    std::stringstream text{""};
+    text << "Vidas do Coelho: " << bunny_lives << "/5";
+    std::string txt = text.str();
+    static char  buffer[20];
+    strcpy(buffer, txt.c_str());
+
+    float lineheight = TextRendering_LineHeight(window);
+    float charwidth = TextRendering_CharWidth(window);
+
+    TextRendering_PrintString(window, buffer,  -1.0f, 1.0f-lineheight, 1.0f);
+}
+
 // Escrevemos na tela qual matriz de projeção está sendo utilizada.
 void TextRendering_ShowProjection(GLFWwindow* window)
 {
@@ -1475,6 +1508,7 @@ void TextRendering_ShowProjection(GLFWwindow* window)
 
     float lineheight = TextRendering_LineHeight(window);
     float charwidth = TextRendering_CharWidth(window);
+    TextRendering_ShowBunnyLives(window, bunny_lives);
 
     if ( g_UsePerspectiveProjection )
         TextRendering_PrintString(window, "Perspective", 1.0f-13*charwidth, -1.0f+2*lineheight/10, 1.0f);
