@@ -204,9 +204,21 @@ void main()
 
     else if ( object_id == BUILDING1 )
     {
-        // Coordenadas de textura do plano, obtidas do arquivo OBJ.
-        U = texcoords.x;
-        V = texcoords.y;
+
+
+        float minx = bbox_min.x;
+        float maxx = bbox_max.x;
+
+        float miny = bbox_min.y;
+        float maxy = bbox_max.y;
+
+        float minz = bbox_min.z;
+        float maxz = bbox_max.z;
+
+        P = position_model;
+
+        U = (P.x-minx)/(maxx-minx);
+        V = (P.y-miny)/(maxy-miny);
 
         vec3 Kd0 = texture(TextureImage0, vec2(U,V)).rgb;
         // Equação de Iluminação

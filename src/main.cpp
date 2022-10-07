@@ -255,9 +255,9 @@ int main(int argc, char* argv[])
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 
-    #ifdef __APPLE__
+#ifdef __APPLE__
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-    #endif
+#endif
 
     // Pedimos para utilizar o perfil "core", isto é, utilizaremos somente as
     // funções modernas de OpenGL.
@@ -333,7 +333,7 @@ int main(int argc, char* argv[])
     BuildTrianglesAndAddToVirtualScene(&projectilemodel);
 
     //ObjModel t_34_objmodel("../../data/t_34_obj.obj");
-   // ComputeNormals(&t_34_objmodel);
+    // ComputeNormals(&t_34_objmodel);
     //BuildTrianglesAndAddToVirtualScene(&t_34_objmodel);
 
     ObjModel canomodel("../../data/gun.obj");
@@ -413,13 +413,13 @@ int main(int argc, char* argv[])
         // Fonte: Laboratório 2
         // Retirado dos slides Aula 08 - Sistemas de Coordenadas paginas 195-227
 
-		glm::vec4 w = -camera_view_vector; //vetor w
-		glm::vec4 u = crossproduct(camera_up_vector, w); //vetor u
+        glm::vec4 w = -camera_view_vector; //vetor w
+        glm::vec4 u = crossproduct(camera_up_vector, w); //vetor u
 
-		w = w / norm(w);
-		u = u / norm(u);
+        w = w / norm(w);
+        u = u / norm(u);
 
-		w.y = 0;
+        w.y = 0;
 
         glm::vec4 old_pos;
         old_pos = camera_position_c;
@@ -441,16 +441,16 @@ int main(int argc, char* argv[])
         glm::mat4 view = Matrix_Camera_View(camera_position_c, camera_view_vector, camera_up_vector);
 
         if(W_key)
-			camera_position_c += -w * speed;
+            camera_position_c += -w * speed;
 
-		if(S_key)
-			camera_position_c += w * speed;
+        if(S_key)
+            camera_position_c += w * speed;
 
-		if(D_key)
-			camera_position_c += u * speed;
+        if(D_key)
+            camera_position_c += u * speed;
 
-		if(A_key)
-			camera_position_c += -u * speed;
+        if(A_key)
+            camera_position_c += -u * speed;
 
         // Agora computamos a matriz de Projeção.
         glm::mat4 projection;
@@ -486,110 +486,122 @@ int main(int argc, char* argv[])
         // Enviamos as matrizes "view" e "projection" para a placa de vídeo
         // (GPU). Veja o arquivo "shader_vertex.glsl", onde estas são
         // efetivamente aplicadas em todos os pontos.
-        glUniformMatrix4fv(view_uniform       , 1 , GL_FALSE , glm::value_ptr(view));
-        glUniformMatrix4fv(projection_uniform , 1 , GL_FALSE , glm::value_ptr(projection));
+        glUniformMatrix4fv(view_uniform, 1, GL_FALSE, glm::value_ptr(view));
+        glUniformMatrix4fv(projection_uniform, 1, GL_FALSE, glm::value_ptr(projection));
 
-        #define SPHERE 0
-        #define BUNNY  1
-        #define PLANE  2
-        #define PROJECTILE 3
+#define SPHERE 0
+#define BUNNY  1
+#define PLANE  2
+#define PROJECTILE 3
         //#define TANK 4
-        #define BUILDING1 4
-        #define CANO 5
+#define BUILDING1 4
+#define CANO 5
 
         // Desenhamos o modelo da esfera
         model = Matrix_Translate(-1.0f,2.5f,1.0f)
-              * Matrix_Rotate_Z(0.6f)
-              * Matrix_Rotate_X(0.2f)
-              * Matrix_Rotate_Y(g_AngleY + (float)glfwGetTime() * 0.1f);
-        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+                * Matrix_Rotate_Z(0.6f)
+                * Matrix_Rotate_X(0.2f)
+                * Matrix_Rotate_Y(g_AngleY + (float)glfwGetTime() * 0.1f);
+        glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
         glUniform1i(object_id_uniform, SPHERE);
         DrawVirtualObject("sphere");
 
         // Desenhamos o modelo do coelho
         model = Matrix_Translate(-3.0f,-0.5f,0.0f);
-              //* Matrix_Rotate_X(g_AngleX + (float)glfwGetTime() * 0.1f);
-        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+
+        //Bounding box do coelho para colisoes
+        glm::vec4 bbox_max_world_bunny = model * glm::vec4 (g_VirtualScene["bunny"].bbox_max.x, g_VirtualScene["bunny"].bbox_max.y, g_VirtualScene["bunny"].bbox_max.z, 1.0f);
+        glm::vec4 bbox_min_world_bunny = model * glm::vec4 (g_VirtualScene["bunny"].bbox_min.x, g_VirtualScene["bunny"].bbox_min.y, g_VirtualScene["bunny"].bbox_min.z, 1.0f);
+
+        glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
         glUniform1i(object_id_uniform, BUNNY);
         DrawVirtualObject("bunny");
 
         // Desenhamos o plano do chão
         model = Matrix_Translate(0.0f,-0.5f,0.0f)*Matrix_Scale(arena_X,arena_Y,arena_Z);
-        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+        glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
         glUniform1i(object_id_uniform, PLANE);
         DrawVirtualObject("plane");
 
         //Desenha Projetil
         //float raio = g_VirtualScene["bullet"].bbox_max.x - g_VirtualScene["bullet"].bbox_min.x;
 
-        if(projectile_fired == true){
+        if(projectile_fired == true)
+        {
             model = Matrix_Identity();
-            model = model * Matrix_Translate(projectile_pos.x , projectile_pos.y, projectile_pos.z)
-                        * Matrix_Rotate_Y(g_CameraTheta)
-                            * Matrix_Rotate_X(g_CameraPhi);
+            model = model * Matrix_Translate(projectile_pos.x, projectile_pos.y, projectile_pos.z)
+                    * Matrix_Rotate_Y(g_CameraTheta)
+                    * Matrix_Rotate_X(g_CameraPhi);
             PushMatrix(model);
-                model = model* Matrix_Translate(0.0f,0.0f,1.0f)
-                        * Matrix_Scale(0.05f,0.05f,0.05f)
-                        * Matrix_Rotate_X(3.14f/2.0f)
-                        * Matrix_Translate(0,0,0);
-                glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
-                glUniform1i(object_id_uniform, PROJECTILE);
-                DrawVirtualObject("projectile");
+            model = model* Matrix_Translate(0.0f,0.0f,1.0f)
+                    * Matrix_Scale(0.05f,0.05f,0.05f)
+                    * Matrix_Rotate_X(3.14f/2.0f)
+                    * Matrix_Translate(0,0,0);
+            glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+            glUniform1i(object_id_uniform, PROJECTILE);
+            DrawVirtualObject("projectile");
             PopMatrix(model);
 
             glm::vec4 new_pos = glm::vec4(projectile_pos.x + camera_view_vector.x * projectile_speed,
-                                    projectile_pos.y + camera_view_vector.y * projectile_speed,
-                                    projectile_pos.z + camera_view_vector.z * projectile_speed, 1.0f);
+                                          projectile_pos.y + camera_view_vector.y * projectile_speed,
+                                          projectile_pos.z + camera_view_vector.z * projectile_speed, 1.0f);
 
             projectile_pos = new_pos;
-
-            /*if(collisionProjectileBullet(projectile_pos, bullet_pos, raio)) {
-                projectile_fired = false;
-            }*/
         }
 
-        // Desenhamos o plano do chão
-        //model = Matrix_Translate(0.7f, 0.5f,0.5f)*Matrix_Scale(arena_X,arena_Y,arena_Z);
-        //glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
-        //glUniform1i(object_id_uniform, TANK);
-        //DrawVirtualObject("t_34_obj");
-
-
+        //Desenha o Predio
         model = Matrix_Translate(0.0f,0.0f,0.0f) * Matrix_Scale(0.1, 0.1, 0.01);
-        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+
+        //bbox do predio para colisao
+        glm::vec4 bbox_max_world_building = model * glm::vec4 (g_VirtualScene["building1model"].bbox_max.x, g_VirtualScene["building1model"].bbox_max.y, g_VirtualScene["building1model"].bbox_max.z, 1.0f);
+        glm::vec4 bbox_min_world_building = model * glm::vec4 (g_VirtualScene["building1model"].bbox_min.x, g_VirtualScene["building1model"].bbox_min.y, g_VirtualScene["building1model"].bbox_min.z, 1.0f);
+
+        glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
         glUniform1i(object_id_uniform, BUILDING1);
         DrawVirtualObject("building1model");
 
         model = Matrix_Translate(-0.8f,0.1f,0.1f)* Matrix_Scale(0.1, 0.1, 0.01);
-        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+        glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
         glUniform1i(object_id_uniform, CANO);
         DrawVirtualObject("canomodel");
 
 
 
-    // COLISÕES
+        // COLISÕES
 
-            // Tank-Limites  = colisão com um plano
+        // Tank-Limites  = colisão com um plano
 
-            if(collisionPlano(EixoPlano::X, arena_X, camera_position_c))
-            {
-                camera_position_c = old_pos;
-            }
+        if(collisionPlano(EixoPlano::X, arena_X, camera_position_c))
+        {
+            camera_position_c = old_pos;
+        }
 
-            if(collisionPlano(EixoPlano::X, -arena_X, camera_position_c))
-            {
-                camera_position_c = old_pos;
-            }
+        if(collisionPlano(EixoPlano::X, -arena_X, camera_position_c))
+        {
+            camera_position_c = old_pos;
+        }
 
-            if(collisionPlano(EixoPlano::Z, arena_Z, camera_position_c))
-            {
-                camera_position_c = old_pos;
-            }
+        if(collisionPlano(EixoPlano::Z, arena_Z, camera_position_c))
+        {
+            camera_position_c = old_pos;
+        }
 
-            if(collisionPlano(EixoPlano::Z, -arena_Z, camera_position_c))
-            {
-                camera_position_c = old_pos;
-            }
+        if(collisionPlano(EixoPlano::Z, -arena_Z, camera_position_c))
+        {
+            camera_position_c = old_pos;
+        }
+
+        // Tank-Coelho  = colisão com do tank com o coelho
+        if(CollisionTankCoelho(camera_position_c, glm::vec3(0.2f, 0.2f, 0.2f), bbox_min_world_bunny, bbox_max_world_bunny))
+        {
+            camera_position_c = old_pos;
+        }
+
+        // Tank-Predio  = colisão com do tank com o predi
+        if(CollisionTankPredio(camera_position_c, glm::vec3(0.2f, 0.2f, 0.2f), bbox_min_world_building, bbox_max_world_building))
+        {
+            camera_position_c = old_pos;
+        }
 
         // Pegamos um vértice com coordenadas de modelo (0.5, 0.5, 0.5, 1) e o
         // passamos por todos os sistemas de coordenadas armazenados nas
@@ -1026,10 +1038,13 @@ void LoadShader(const char* filename, GLuint shader_id)
     // e colocamos seu conteúdo em memória, apontado pela variável
     // "shader_string".
     std::ifstream file;
-    try {
+    try
+    {
         file.exceptions(std::ifstream::failbit);
         file.open(filename);
-    } catch ( std::exception& e ) {
+    }
+    catch ( std::exception& e )
+    {
         fprintf(stderr, "ERROR: Cannot open file \"%s\".\n", filename);
         std::exit(EXIT_FAILURE);
     }
@@ -1178,7 +1193,8 @@ void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
         glfwGetCursorPos(window, &g_LastCursorPosX, &g_LastCursorPosY);
         g_LeftMouseButtonPressed = true;
 
-        if (projectile_fired == false){
+        if (projectile_fired == false)
+        {
             projectile_fired = true;
             projectile_pos = camera_position_c;
         }
@@ -1437,11 +1453,11 @@ void TextRendering_ShowModelViewProjection(
     glm::vec2 q = glm::vec2(width, height);
 
     glm::mat4 viewport_mapping = Matrix(
-        (q.x - p.x)/(b.x-a.x), 0.0f, 0.0f, (b.x*p.x - a.x*q.x)/(b.x-a.x),
-        0.0f, (q.y - p.y)/(b.y-a.y), 0.0f, (b.y*p.y - a.y*q.y)/(b.y-a.y),
-        0.0f , 0.0f , 1.0f , 0.0f ,
-        0.0f , 0.0f , 0.0f , 1.0f
-    );
+                                     (q.x - p.x)/(b.x-a.x), 0.0f, 0.0f, (b.x*p.x - a.x*q.x)/(b.x-a.x),
+                                     0.0f, (q.y - p.y)/(b.y-a.y), 0.0f, (b.y*p.y - a.y*q.y)/(b.y-a.y),
+                                     0.0f, 0.0f, 1.0f, 0.0f,
+                                     0.0f, 0.0f, 0.0f, 1.0f
+                                 );
 
     TextRendering_PrintString(window, "                                                       |  ", -1.0f, 1.0f-22*pad, 1.0f);
     TextRendering_PrintString(window, "                            .--------------------------'  ", -1.0f, 1.0f-23*pad, 1.0f);
@@ -1507,168 +1523,183 @@ void TextRendering_ShowFramesPerSecond(GLFWwindow* window)
 // Veja: https://github.com/syoyo/tinyobjloader/blob/22883def8db9ef1f3ffb9b404318e7dd25fdbb51/loader_example.cc#L98
 void PrintObjModelInfo(ObjModel* model)
 {
-  const tinyobj::attrib_t                & attrib    = model->attrib;
-  const std::vector<tinyobj::shape_t>    & shapes    = model->shapes;
-  const std::vector<tinyobj::material_t> & materials = model->materials;
+    const tinyobj::attrib_t                & attrib    = model->attrib;
+    const std::vector<tinyobj::shape_t>    & shapes    = model->shapes;
+    const std::vector<tinyobj::material_t> & materials = model->materials;
 
-  printf("# of vertices  : %d\n", (int)(attrib.vertices.size() / 3));
-  printf("# of normals   : %d\n", (int)(attrib.normals.size() / 3));
-  printf("# of texcoords : %d\n", (int)(attrib.texcoords.size() / 2));
-  printf("# of shapes    : %d\n", (int)shapes.size());
-  printf("# of materials : %d\n", (int)materials.size());
+    printf("# of vertices  : %d\n", (int)(attrib.vertices.size() / 3));
+    printf("# of normals   : %d\n", (int)(attrib.normals.size() / 3));
+    printf("# of texcoords : %d\n", (int)(attrib.texcoords.size() / 2));
+    printf("# of shapes    : %d\n", (int)shapes.size());
+    printf("# of materials : %d\n", (int)materials.size());
 
-  for (size_t v = 0; v < attrib.vertices.size() / 3; v++) {
-    printf("  v[%ld] = (%f, %f, %f)\n", static_cast<long>(v),
-           static_cast<const double>(attrib.vertices[3 * v + 0]),
-           static_cast<const double>(attrib.vertices[3 * v + 1]),
-           static_cast<const double>(attrib.vertices[3 * v + 2]));
-  }
-
-  for (size_t v = 0; v < attrib.normals.size() / 3; v++) {
-    printf("  n[%ld] = (%f, %f, %f)\n", static_cast<long>(v),
-           static_cast<const double>(attrib.normals[3 * v + 0]),
-           static_cast<const double>(attrib.normals[3 * v + 1]),
-           static_cast<const double>(attrib.normals[3 * v + 2]));
-  }
-
-  for (size_t v = 0; v < attrib.texcoords.size() / 2; v++) {
-    printf("  uv[%ld] = (%f, %f)\n", static_cast<long>(v),
-           static_cast<const double>(attrib.texcoords[2 * v + 0]),
-           static_cast<const double>(attrib.texcoords[2 * v + 1]));
-  }
-
-  // For each shape
-  for (size_t i = 0; i < shapes.size(); i++) {
-    printf("shape[%ld].name = %s\n", static_cast<long>(i),
-           shapes[i].name.c_str());
-    printf("Size of shape[%ld].indices: %lu\n", static_cast<long>(i),
-           static_cast<unsigned long>(shapes[i].mesh.indices.size()));
-
-    size_t index_offset = 0;
-
-    assert(shapes[i].mesh.num_face_vertices.size() ==
-           shapes[i].mesh.material_ids.size());
-
-    printf("shape[%ld].num_faces: %lu\n", static_cast<long>(i),
-           static_cast<unsigned long>(shapes[i].mesh.num_face_vertices.size()));
-
-    // For each face
-    for (size_t f = 0; f < shapes[i].mesh.num_face_vertices.size(); f++) {
-      size_t fnum = shapes[i].mesh.num_face_vertices[f];
-
-      printf("  face[%ld].fnum = %ld\n", static_cast<long>(f),
-             static_cast<unsigned long>(fnum));
-
-      // For each vertex in the face
-      for (size_t v = 0; v < fnum; v++) {
-        tinyobj::index_t idx = shapes[i].mesh.indices[index_offset + v];
-        printf("    face[%ld].v[%ld].idx = %d/%d/%d\n", static_cast<long>(f),
-               static_cast<long>(v), idx.vertex_index, idx.normal_index,
-               idx.texcoord_index);
-      }
-
-      printf("  face[%ld].material_id = %d\n", static_cast<long>(f),
-             shapes[i].mesh.material_ids[f]);
-
-      index_offset += fnum;
+    for (size_t v = 0; v < attrib.vertices.size() / 3; v++)
+    {
+        printf("  v[%ld] = (%f, %f, %f)\n", static_cast<long>(v),
+               static_cast<const double>(attrib.vertices[3 * v + 0]),
+               static_cast<const double>(attrib.vertices[3 * v + 1]),
+               static_cast<const double>(attrib.vertices[3 * v + 2]));
     }
 
-    printf("shape[%ld].num_tags: %lu\n", static_cast<long>(i),
-           static_cast<unsigned long>(shapes[i].mesh.tags.size()));
-    for (size_t t = 0; t < shapes[i].mesh.tags.size(); t++) {
-      printf("  tag[%ld] = %s ", static_cast<long>(t),
-             shapes[i].mesh.tags[t].name.c_str());
-      printf(" ints: [");
-      for (size_t j = 0; j < shapes[i].mesh.tags[t].intValues.size(); ++j) {
-        printf("%ld", static_cast<long>(shapes[i].mesh.tags[t].intValues[j]));
-        if (j < (shapes[i].mesh.tags[t].intValues.size() - 1)) {
-          printf(", ");
-        }
-      }
-      printf("]");
-
-      printf(" floats: [");
-      for (size_t j = 0; j < shapes[i].mesh.tags[t].floatValues.size(); ++j) {
-        printf("%f", static_cast<const double>(
-                         shapes[i].mesh.tags[t].floatValues[j]));
-        if (j < (shapes[i].mesh.tags[t].floatValues.size() - 1)) {
-          printf(", ");
-        }
-      }
-      printf("]");
-
-      printf(" strings: [");
-      for (size_t j = 0; j < shapes[i].mesh.tags[t].stringValues.size(); ++j) {
-        printf("%s", shapes[i].mesh.tags[t].stringValues[j].c_str());
-        if (j < (shapes[i].mesh.tags[t].stringValues.size() - 1)) {
-          printf(", ");
-        }
-      }
-      printf("]");
-      printf("\n");
+    for (size_t v = 0; v < attrib.normals.size() / 3; v++)
+    {
+        printf("  n[%ld] = (%f, %f, %f)\n", static_cast<long>(v),
+               static_cast<const double>(attrib.normals[3 * v + 0]),
+               static_cast<const double>(attrib.normals[3 * v + 1]),
+               static_cast<const double>(attrib.normals[3 * v + 2]));
     }
-  }
 
-  for (size_t i = 0; i < materials.size(); i++) {
-    printf("material[%ld].name = %s\n", static_cast<long>(i),
-           materials[i].name.c_str());
-    printf("  material.Ka = (%f, %f ,%f)\n",
-           static_cast<const double>(materials[i].ambient[0]),
-           static_cast<const double>(materials[i].ambient[1]),
-           static_cast<const double>(materials[i].ambient[2]));
-    printf("  material.Kd = (%f, %f ,%f)\n",
-           static_cast<const double>(materials[i].diffuse[0]),
-           static_cast<const double>(materials[i].diffuse[1]),
-           static_cast<const double>(materials[i].diffuse[2]));
-    printf("  material.Ks = (%f, %f ,%f)\n",
-           static_cast<const double>(materials[i].specular[0]),
-           static_cast<const double>(materials[i].specular[1]),
-           static_cast<const double>(materials[i].specular[2]));
-    printf("  material.Tr = (%f, %f ,%f)\n",
-           static_cast<const double>(materials[i].transmittance[0]),
-           static_cast<const double>(materials[i].transmittance[1]),
-           static_cast<const double>(materials[i].transmittance[2]));
-    printf("  material.Ke = (%f, %f ,%f)\n",
-           static_cast<const double>(materials[i].emission[0]),
-           static_cast<const double>(materials[i].emission[1]),
-           static_cast<const double>(materials[i].emission[2]));
-    printf("  material.Ns = %f\n",
-           static_cast<const double>(materials[i].shininess));
-    printf("  material.Ni = %f\n", static_cast<const double>(materials[i].ior));
-    printf("  material.dissolve = %f\n",
-           static_cast<const double>(materials[i].dissolve));
-    printf("  material.illum = %d\n", materials[i].illum);
-    printf("  material.map_Ka = %s\n", materials[i].ambient_texname.c_str());
-    printf("  material.map_Kd = %s\n", materials[i].diffuse_texname.c_str());
-    printf("  material.map_Ks = %s\n", materials[i].specular_texname.c_str());
-    printf("  material.map_Ns = %s\n",
-           materials[i].specular_highlight_texname.c_str());
-    printf("  material.map_bump = %s\n", materials[i].bump_texname.c_str());
-    printf("  material.map_d = %s\n", materials[i].alpha_texname.c_str());
-    printf("  material.disp = %s\n", materials[i].displacement_texname.c_str());
-    printf("  <<PBR>>\n");
-    printf("  material.Pr     = %f\n", materials[i].roughness);
-    printf("  material.Pm     = %f\n", materials[i].metallic);
-    printf("  material.Ps     = %f\n", materials[i].sheen);
-    printf("  material.Pc     = %f\n", materials[i].clearcoat_thickness);
-    printf("  material.Pcr    = %f\n", materials[i].clearcoat_thickness);
-    printf("  material.aniso  = %f\n", materials[i].anisotropy);
-    printf("  material.anisor = %f\n", materials[i].anisotropy_rotation);
-    printf("  material.map_Ke = %s\n", materials[i].emissive_texname.c_str());
-    printf("  material.map_Pr = %s\n", materials[i].roughness_texname.c_str());
-    printf("  material.map_Pm = %s\n", materials[i].metallic_texname.c_str());
-    printf("  material.map_Ps = %s\n", materials[i].sheen_texname.c_str());
-    printf("  material.norm   = %s\n", materials[i].normal_texname.c_str());
-    std::map<std::string, std::string>::const_iterator it(
-        materials[i].unknown_parameter.begin());
-    std::map<std::string, std::string>::const_iterator itEnd(
-        materials[i].unknown_parameter.end());
-
-    for (; it != itEnd; it++) {
-      printf("  material.%s = %s\n", it->first.c_str(), it->second.c_str());
+    for (size_t v = 0; v < attrib.texcoords.size() / 2; v++)
+    {
+        printf("  uv[%ld] = (%f, %f)\n", static_cast<long>(v),
+               static_cast<const double>(attrib.texcoords[2 * v + 0]),
+               static_cast<const double>(attrib.texcoords[2 * v + 1]));
     }
-    printf("\n");
-  }
+
+    // For each shape
+    for (size_t i = 0; i < shapes.size(); i++)
+    {
+        printf("shape[%ld].name = %s\n", static_cast<long>(i),
+               shapes[i].name.c_str());
+        printf("Size of shape[%ld].indices: %lu\n", static_cast<long>(i),
+               static_cast<unsigned long>(shapes[i].mesh.indices.size()));
+
+        size_t index_offset = 0;
+
+        assert(shapes[i].mesh.num_face_vertices.size() ==
+               shapes[i].mesh.material_ids.size());
+
+        printf("shape[%ld].num_faces: %lu\n", static_cast<long>(i),
+               static_cast<unsigned long>(shapes[i].mesh.num_face_vertices.size()));
+
+        // For each face
+        for (size_t f = 0; f < shapes[i].mesh.num_face_vertices.size(); f++)
+        {
+            size_t fnum = shapes[i].mesh.num_face_vertices[f];
+
+            printf("  face[%ld].fnum = %ld\n", static_cast<long>(f),
+                   static_cast<unsigned long>(fnum));
+
+            // For each vertex in the face
+            for (size_t v = 0; v < fnum; v++)
+            {
+                tinyobj::index_t idx = shapes[i].mesh.indices[index_offset + v];
+                printf("    face[%ld].v[%ld].idx = %d/%d/%d\n", static_cast<long>(f),
+                       static_cast<long>(v), idx.vertex_index, idx.normal_index,
+                       idx.texcoord_index);
+            }
+
+            printf("  face[%ld].material_id = %d\n", static_cast<long>(f),
+                   shapes[i].mesh.material_ids[f]);
+
+            index_offset += fnum;
+        }
+
+        printf("shape[%ld].num_tags: %lu\n", static_cast<long>(i),
+               static_cast<unsigned long>(shapes[i].mesh.tags.size()));
+        for (size_t t = 0; t < shapes[i].mesh.tags.size(); t++)
+        {
+            printf("  tag[%ld] = %s ", static_cast<long>(t),
+                   shapes[i].mesh.tags[t].name.c_str());
+            printf(" ints: [");
+            for (size_t j = 0; j < shapes[i].mesh.tags[t].intValues.size(); ++j)
+            {
+                printf("%ld", static_cast<long>(shapes[i].mesh.tags[t].intValues[j]));
+                if (j < (shapes[i].mesh.tags[t].intValues.size() - 1))
+                {
+                    printf(", ");
+                }
+            }
+            printf("]");
+
+            printf(" floats: [");
+            for (size_t j = 0; j < shapes[i].mesh.tags[t].floatValues.size(); ++j)
+            {
+                printf("%f", static_cast<const double>(
+                           shapes[i].mesh.tags[t].floatValues[j]));
+                if (j < (shapes[i].mesh.tags[t].floatValues.size() - 1))
+                {
+                    printf(", ");
+                }
+            }
+            printf("]");
+
+            printf(" strings: [");
+            for (size_t j = 0; j < shapes[i].mesh.tags[t].stringValues.size(); ++j)
+            {
+                printf("%s", shapes[i].mesh.tags[t].stringValues[j].c_str());
+                if (j < (shapes[i].mesh.tags[t].stringValues.size() - 1))
+                {
+                    printf(", ");
+                }
+            }
+            printf("]");
+            printf("\n");
+        }
+    }
+
+    for (size_t i = 0; i < materials.size(); i++)
+    {
+        printf("material[%ld].name = %s\n", static_cast<long>(i),
+               materials[i].name.c_str());
+        printf("  material.Ka = (%f, %f ,%f)\n",
+               static_cast<const double>(materials[i].ambient[0]),
+               static_cast<const double>(materials[i].ambient[1]),
+               static_cast<const double>(materials[i].ambient[2]));
+        printf("  material.Kd = (%f, %f ,%f)\n",
+               static_cast<const double>(materials[i].diffuse[0]),
+               static_cast<const double>(materials[i].diffuse[1]),
+               static_cast<const double>(materials[i].diffuse[2]));
+        printf("  material.Ks = (%f, %f ,%f)\n",
+               static_cast<const double>(materials[i].specular[0]),
+               static_cast<const double>(materials[i].specular[1]),
+               static_cast<const double>(materials[i].specular[2]));
+        printf("  material.Tr = (%f, %f ,%f)\n",
+               static_cast<const double>(materials[i].transmittance[0]),
+               static_cast<const double>(materials[i].transmittance[1]),
+               static_cast<const double>(materials[i].transmittance[2]));
+        printf("  material.Ke = (%f, %f ,%f)\n",
+               static_cast<const double>(materials[i].emission[0]),
+               static_cast<const double>(materials[i].emission[1]),
+               static_cast<const double>(materials[i].emission[2]));
+        printf("  material.Ns = %f\n",
+               static_cast<const double>(materials[i].shininess));
+        printf("  material.Ni = %f\n", static_cast<const double>(materials[i].ior));
+        printf("  material.dissolve = %f\n",
+               static_cast<const double>(materials[i].dissolve));
+        printf("  material.illum = %d\n", materials[i].illum);
+        printf("  material.map_Ka = %s\n", materials[i].ambient_texname.c_str());
+        printf("  material.map_Kd = %s\n", materials[i].diffuse_texname.c_str());
+        printf("  material.map_Ks = %s\n", materials[i].specular_texname.c_str());
+        printf("  material.map_Ns = %s\n",
+               materials[i].specular_highlight_texname.c_str());
+        printf("  material.map_bump = %s\n", materials[i].bump_texname.c_str());
+        printf("  material.map_d = %s\n", materials[i].alpha_texname.c_str());
+        printf("  material.disp = %s\n", materials[i].displacement_texname.c_str());
+        printf("  <<PBR>>\n");
+        printf("  material.Pr     = %f\n", materials[i].roughness);
+        printf("  material.Pm     = %f\n", materials[i].metallic);
+        printf("  material.Ps     = %f\n", materials[i].sheen);
+        printf("  material.Pc     = %f\n", materials[i].clearcoat_thickness);
+        printf("  material.Pcr    = %f\n", materials[i].clearcoat_thickness);
+        printf("  material.aniso  = %f\n", materials[i].anisotropy);
+        printf("  material.anisor = %f\n", materials[i].anisotropy_rotation);
+        printf("  material.map_Ke = %s\n", materials[i].emissive_texname.c_str());
+        printf("  material.map_Pr = %s\n", materials[i].roughness_texname.c_str());
+        printf("  material.map_Pm = %s\n", materials[i].metallic_texname.c_str());
+        printf("  material.map_Ps = %s\n", materials[i].sheen_texname.c_str());
+        printf("  material.norm   = %s\n", materials[i].normal_texname.c_str());
+        std::map<std::string, std::string>::const_iterator it(
+            materials[i].unknown_parameter.begin());
+        std::map<std::string, std::string>::const_iterator itEnd(
+            materials[i].unknown_parameter.end());
+
+        for (; it != itEnd; it++)
+        {
+            printf("  material.%s = %s\n", it->first.c_str(), it->second.c_str());
+        }
+        printf("\n");
+    }
 }
 
 // set makeprg=cd\ ..\ &&\ make\ run\ >/dev/null
