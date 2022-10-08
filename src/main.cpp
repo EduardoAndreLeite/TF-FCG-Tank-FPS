@@ -270,7 +270,7 @@ int main(int argc, char* argv[])
     // Criamos uma janela do sistema operacional, com 800 colunas e 600 linhas
     // de pixels, e com título "INF01047 ...".
     GLFWwindow* window;
-    window = glfwCreateWindow(800, 600, "INF01047 - 00287684 - Eduardo André Leite", NULL, NULL);
+    window = glfwCreateWindow(800, 600, "INF01047 - Trabalho Final - Mutant Rabbit Invasion on the Moon", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
@@ -497,13 +497,13 @@ int main(int argc, char* argv[])
         glUniformMatrix4fv(view_uniform, 1, GL_FALSE, glm::value_ptr(view));
         glUniformMatrix4fv(projection_uniform, 1, GL_FALSE, glm::value_ptr(projection));
 
-#define SPHERE 0
-#define BUNNY  1
-#define PLANE  2
-#define PROJECTILE 3
-#define BUILDING1 4
-#define BUILDING2 5
-#define CANO 6
+    #define SPHERE 0
+    #define BUNNY  1
+    #define PLANE  2
+    #define PROJECTILE 3
+    #define BUILDING1 4
+    #define BUILDING2 5
+    #define CANO 6
 
         // Desenhamos o modelo da esfera
         model = Matrix_Translate(2.0f,2.5f,1.0f)
@@ -632,7 +632,9 @@ int main(int argc, char* argv[])
         if(CollisionProjetilCoelho(bbox_min_world_bunny, bbox_max_world_bunny, projectile_pos))
         {
             projectile_fired = false;
-            bunny_lives = bunny_lives - 1;
+            if(bunny_lives>0){
+                    bunny_lives = bunny_lives - 1;
+            }
             projectile_pos = initial_pos;
 
         }
@@ -1512,7 +1514,12 @@ void TextRendering_ShowModelViewProjection(
 void TextRendering_ShowBunnyLives(GLFWwindow* window, int hp)
 {
     std::stringstream text{""};
-    text << "Vidas do Coelho: " << bunny_lives << "/4";
+    if(bunny_lives>0){
+        text << "Vidas do Coelho: " << bunny_lives << "/4";
+    }
+    else{
+        text << "O coelho mutante foi eliminado!";
+    }
     std::string txt = text.str();
     static char  buffer[20];
     strcpy(buffer, txt.c_str());
